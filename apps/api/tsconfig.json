@@ -1,0 +1,8 @@
+{
+  "extends": "@trustexam/config/tsconfig/nest.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "."
+  },
+  "include": ["src", "test", "prisma", "vitest.config.mts"]
+}

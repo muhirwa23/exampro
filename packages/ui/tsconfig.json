@@ -1,0 +1,4 @@
+{
+  "extends": "@trustexam/config/tsconfig/react.json",
+  "include": ["src", "vitest.config.ts", "vitest.setup.ts"]
+}

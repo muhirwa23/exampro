@@ -22,7 +22,7 @@ Only edit folders your task names. If you must change a folder owned by another 
 
 ## Stack (do not change without an ADR in `docs/adr/`)
 - Monorepo: pnpm workspaces + Turborepo. Node 22 LTS. TypeScript strict everywhere.
-- API: NestJS, Prisma, PostgreSQL 16, Redis + BullMQ, S3-compatible storage (MinIO locally), Zod for runtime validation at the edges.
+- API: NestJS, Prisma, PostgreSQL 16, Redis + BullMQ, S3-compatible storage (SeaweedFS locally, see docs/adr/0001), Zod for runtime validation at the edges.
 - Web: Next.js App Router, Tailwind, shadcn/ui, TanStack Query, generated API client from `packages/contracts`.
 - Desktop: Tauri 2, Rust stable, tokio, reqwest (rustls), rusqlite, serde, ring. React screens shared with web via `packages/ui`.
 - Tests: Vitest (TS), Jest only if NestJS needs it, `cargo test`, Playwright for e2e.
@@ -32,7 +32,7 @@ Only edit folders your task names. If you must change a folder owned by another 
 ```
 pnpm install
 pnpm dev               # web + api + desktop UI with local stack
-pnpm docker:up         # postgres, redis, minio, mailpit
+pnpm docker:up         # postgres, redis, s3 (seaweedfs), mailpit
 pnpm lint && pnpm typecheck && pnpm test
 pnpm contracts:gen     # regenerate TS + Rust types from packages/contracts
 cargo test --workspace # Rust; uses the mock platform on Linux

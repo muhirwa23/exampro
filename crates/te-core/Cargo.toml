@@ -1,0 +1,13 @@
+[package]
+name = "te-core"
+description = "Session, device key, local SQLite store, sync, heartbeats, event queue and uploader"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+
+[lints]
+workspace = true

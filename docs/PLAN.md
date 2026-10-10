@@ -3,8 +3,8 @@
 Agents tick items in the PR that finishes them. IDs are stable; prompts reference them. Owner: CC = Claude Code, CX = Codex, AG = Antigravity, ME = human.
 
 ## Phase 0: Bootstrap
-- [ ] P0-01 CC Monorepo (pnpm, Turborepo, shared config), apps and crates skeletons that build
-- [ ] P0-02 CC Local stack: docker-compose (Postgres, Redis, MinIO, Mailpit), `.env.example`, seed script stub
+- [x] P0-01 CC Monorepo (pnpm, Turborepo, shared config), apps and crates skeletons that build
+- [x] P0-02 CC Local stack: docker-compose (Postgres, Redis, S3 via SeaweedFS, Mailpit), `.env.example`, seed script stub
 - [ ] P0-03 CC Contracts package: openapi.yaml skeleton, events schemas from SPEC §5, codegen for TS and Rust, `contracts:check`
 - [ ] P0-04 CC CI: ci.yml and desktop.yml (build only)
 - [ ] P0-05 ME Turn on Codex code review; add branch protection (CI green + 1 review)

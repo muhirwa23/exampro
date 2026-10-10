@@ -1,0 +1,21 @@
+[workspace]
+resolver = "3"
+members = ["apps/desktop/src-tauri", "crates/*"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+license = "UNLICENSED"
+publish = false
+
+[workspace.dependencies]
+te-core = { path = "crates/te-core" }
+te-rules = { path = "crates/te-rules" }
+te-platform = { path = "crates/te-platform" }
+te-platform-mock = { path = "crates/te-platform-mock" }
+te-platform-windows = { path = "crates/te-platform-windows" }
+te-platform-macos = { path = "crates/te-platform-macos" }
+
+[workspace.lints.clippy]
+all = { level = "warn", priority = -1 }

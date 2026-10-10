@@ -1,0 +1,27 @@
+{
+  "name": "trustexam-pro",
+  "private": true,
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "turbo run dev --filter=@trustexam/api --filter=@trustexam/web --filter=@trustexam/desktop",
+    "build": "turbo run build",
+    "docker:up": "docker compose -f infra/docker-compose.yml up -d --wait",
+    "docker:down": "docker compose -f infra/docker-compose.yml down",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "e2e": "turbo run e2e",
+    "contracts:gen": "pnpm --filter @trustexam/contracts run contracts:gen",
+    "contracts:check": "pnpm --filter @trustexam/contracts run contracts:check",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@trustexam/config": "workspace:*",
+    "prettier": "^3.9.10",
+    "turbo": "^2.11.7"
+  }
+}
