@@ -1,0 +1,11 @@
+[workspace]
+resolver = "2"
+members = [
+    "apps/desktop/src-tauri",
+    "crates/te-core",
+    "crates/te-rules",
+    "crates/te-platform",
+    "crates/te-platform-mock",
+    "crates/te-platform-windows",
+    "crates/te-platform-macos",
+]

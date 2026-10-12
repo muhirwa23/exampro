@@ -1,0 +1,15 @@
+node_modules/
+.pnpm-store/
+.turbo/
+.work/
+.next/
+dist/
+out/
+coverage/
+target/
+.env
+.env.*
+!.env.example
+.DS_Store
+*.tsbuildinfo
+apps/desktop/src-tauri/gen/
