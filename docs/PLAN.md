@@ -1,6 +1,6 @@
 # Build plan tracker
 
-Agents tick items in the PR that finishes them. IDs are stable; prompts reference them. Owner: CC = Claude Code, CX = Codex, AG = Antigravity, ME = human.
+Agents tick items in the PR that finishes them. IDs are stable; prompts reference them. Owner: CC = Claude Code, CX = Codex, AG = Antigravity, MN = Manus, ME = human.
 
 ## Phase 0: Bootstrap
 - [x] P0-01 CC Monorepo (pnpm, Turborepo, shared config), apps and crates skeletons that build
@@ -62,7 +62,7 @@ Agents tick items in the PR that finishes them. IDs are stable; prompts referenc
 - [ ] P7-01 CX Retention jobs, exports (PDF/JSON), candidate data export/delete
 - [ ] P7-02 CX Consent records, notice versions, biometric consent gating
 - [ ] P7-03 CC Security pass: threat model doc, rate limits, CSP, dependency audit, secrets scan, desktop permissions minimised
-- [ ] P7-04 AG Accessibility pass (axe in e2e) and French translation
+- [ ] P7-04 AG Accessibility pass (axe in e2e); French translation moves to MN-06
 - [ ] P7-05 CC Load test 500 concurrent candidates (k6) and fix hot paths
 
 ## Phase 8: Release and pilot
@@ -70,6 +70,14 @@ Agents tick items in the PR that finishes them. IDs are stable; prompts referenc
 - [ ] P8-02 CC Staging + production deploy, backups, monitoring (Sentry, uptime)
 - [ ] P8-03 ME External security review of desktop app
 - [ ] P8-04 ME Pilot with design partners; collect issues into PLAN.md
+
+## Manus lane (runs alongside phases 0 to 7; prompts in build-kit/prompts/manus.md)
+- [ ] MN-01 MN Vendor research for ID checks, code signing, email and WhatsApp (`docs/research/`)
+- [ ] MN-02 MN Denylist dataset with sources, schema and tests (`packages/denylist/`); feeds SPEC §7 rules, P3-03, P4-02, P4-04
+- [ ] MN-03 MN Candidate-facing copy drafts: privacy notice, rules, consent, fix steps, nudges, invites (`docs/content/`)
+- [ ] MN-04 MN Demo exams and question bank in the P1-05 CSV format (`packages/demo-content/`), after P1-05
+- [ ] MN-05 MN k6 load test scripts for 500 candidates (`loadtest/`), after P3-04 and P5-03; CC fixes hot paths in P7-05
+- [ ] MN-06 MN French and Swahili translations of the message files, after P2-01 and P3-06
 
 ## Phase 9: After pilot
 - [ ] P9-01 Phone as second camera via QR code
