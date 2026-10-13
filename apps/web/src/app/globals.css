@@ -1,20 +1,14 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@import "@trustexam/config/tailwind/preset.css";
+@source "../../../../packages/ui/src";
 
 :root {
-  color-scheme: light;
-  font-family: Arial, Helvetica, sans-serif;
-  background: #f8fafc;
-  color: #0f172a;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
 }
 
 body {
-  min-height: 100vh;
-  margin: 0;
-}
-
-:focus-visible {
-  outline: 3px solid #0f766e;
-  outline-offset: 3px;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
 }

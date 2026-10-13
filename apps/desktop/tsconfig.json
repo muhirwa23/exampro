@@ -1,7 +1,7 @@
 {
-  "extends": "../../packages/config/tsconfig/base.json",
+  "extends": "@trustexam/config/tsconfig/react.json",
   "compilerOptions": {
-    "types": ["vite/client"]
+    "types": ["vite/client", "vitest/globals"]
   },
-  "include": ["src", "vite.config.ts"]
+  "include": ["src", "vite.config.ts", "vitest.setup.ts"]
 }

@@ -1,17 +1,32 @@
 [package]
 name = "trustexam-desktop"
-version = "0.1.0"
-description = "TrustExam Pro candidate desktop shell"
-authors = ["TrustExam Pro"]
-edition = "2021"
-build = "build.rs"
+description = "TrustExam candidate app"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
 
 [lib]
 name = "trustexam_desktop_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
+[features]
+# Forces the scripted mock platform (Linux CI and UI development).
+mock = []
+
 [build-dependencies]
-tauri-build = { version = "2" }
+tauri-build = { version = "2.5", features = [] }
 
 [dependencies]
-tauri = { version = "2" }
+tauri = { version = "2.12", features = [] }
+te-platform-mock.workspace = true
+
+[target.'cfg(target_os = "windows")'.dependencies]
+te-platform-windows.workspace = true
+
+[target.'cfg(target_os = "macos")'.dependencies]
+te-platform-macos.workspace = true
+
+[lints]
+workspace = true

@@ -1,12 +1,8 @@
 {
-  "extends": "../../packages/config/tsconfig/base.json",
+  "extends": "@trustexam/config/tsconfig/nest.json",
   "compilerOptions": {
-    "module": "Node16",
-    "moduleResolution": "Node16",
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "types": ["node"]
+    "outDir": "dist",
+    "rootDir": "."
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src", "test", "prisma", "vitest.config.mts"]
 }

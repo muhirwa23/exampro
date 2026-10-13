@@ -1,0 +1,9 @@
+{
+  "name": "@trustexam/contracts",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "contracts:gen": "node -e \"console.log('contracts: nothing to generate yet (P0-03)')\"",
+    "contracts:check": "node -e \"console.log('contracts: nothing to check yet (P0-03)')\""
+  }
+}

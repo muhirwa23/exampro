@@ -1,6 +1,11 @@
-#[cfg_attr(mobile, tauri::mobile_entry_point)]
+//! Tauri shell for the TrustExam candidate app.
+
+mod platform;
+
+pub use platform::platform_name;
+
 pub fn run() {
     tauri::Builder::default()
         .run(tauri::generate_context!())
-        .expect("failed to run TrustExam Pro desktop shell");
+        .expect("error while running the TrustExam app");
 }

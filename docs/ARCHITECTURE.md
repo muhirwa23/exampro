@@ -56,7 +56,7 @@ Lockdown approach: Windows runs the exam window on a separate desktop (`CreateDe
 4. Submit → API enqueues `score-attempt` → `assess-risk` → `build-report` jobs (BullMQ) → notify org.
 
 ## Environments
-- Local: `pnpm docker:up` (Postgres, Redis, MinIO, Mailpit). Seed script creates a demo org, admin `admin@demo.test`, one exam, invites with fixed codes.
+- Local: `pnpm docker:up` (Postgres, Redis, SeaweedFS as local S3, Mailpit). Seed script creates a demo org, admin `admin@demo.test`, one exam, invites with fixed codes.
 - Staging and production: containers for api and web (Fly.io, Render or a VPS with Docker; pick per data region), managed Postgres and S3-compatible storage. Desktop update feed served from storage behind a CDN.
 
 ## CI (GitHub Actions)

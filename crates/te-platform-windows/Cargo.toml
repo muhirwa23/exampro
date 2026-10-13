@@ -1,7 +1,13 @@
 [package]
 name = "te-platform-windows"
-version = "0.1.0"
-edition = "2021"
+description = "Windows security module: secure desktop lockdown, scans, capture and device watch"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
 
-[lib]
-path = "src/lib.rs"
+[dependencies]
+
+[lints]
+workspace = true

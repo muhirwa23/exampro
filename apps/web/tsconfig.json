@@ -1,9 +1,8 @@
 {
-  "extends": "../../packages/config/tsconfig/base.json",
+  "extends": "@trustexam/config/tsconfig/nextjs.json",
   "compilerOptions": {
-    "plugins": [{ "name": "next" }],
-    "incremental": true
+    "paths": { "@/*": ["./src/*"] }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "src", ".next/types/**/*.ts", "vitest.config.ts", "vitest.setup.ts"],
   "exclude": ["node_modules"]
 }

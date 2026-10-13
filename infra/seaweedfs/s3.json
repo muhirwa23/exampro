@@ -1,0 +1,9 @@
+{
+  "identities": [
+    {
+      "name": "trustexam-local",
+      "credentials": [{ "accessKey": "trustexam", "secretKey": "trustexam-secret" }],
+      "actions": ["Admin", "Read", "List", "Tagging", "Write"]
+    }
+  ]
+}

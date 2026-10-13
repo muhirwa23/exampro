@@ -1,7 +1,13 @@
 [package]
 name = "te-platform"
-version = "0.1.0"
-edition = "2021"
+description = "SecurityPlatform trait and shared types for the per-OS security modules"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
 
-[lib]
-path = "src/lib.rs"
+[dependencies]
+
+[lints]
+workspace = true

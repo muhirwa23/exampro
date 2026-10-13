@@ -1,0 +1,9 @@
+pnpm-lock.yaml
+Cargo.lock
+target/
+.next/
+dist/
+coverage/
+apps/desktop/src-tauri/gen/
+docs/
+*.md

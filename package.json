@@ -1,25 +1,27 @@
 {
   "name": "trustexam-pro",
   "private": true,
-  "version": "0.1.0",
-  "packageManager": "pnpm@12.6.0",
+  "packageManager": "pnpm@10.28.0",
   "engines": {
-    "node": ">=22 <25"
+    "node": ">=22"
   },
   "scripts": {
-    "dev": "turbo dev --parallel",
-    "build": "turbo build",
-    "lint": "turbo lint",
-    "typecheck": "turbo typecheck",
-    "test": "turbo test"
+    "dev": "turbo run dev --filter=@trustexam/api --filter=@trustexam/web --filter=@trustexam/desktop",
+    "build": "turbo run build",
+    "docker:up": "docker compose -f infra/docker-compose.yml up -d --wait",
+    "docker:down": "docker compose -f infra/docker-compose.yml down",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "e2e": "turbo run e2e",
+    "contracts:gen": "pnpm --filter @trustexam/contracts run contracts:gen",
+    "contracts:check": "pnpm --filter @trustexam/contracts run contracts:check",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^8.71.1",
-    "@typescript-eslint/parser": "^8.71.1",
-    "eslint": "^10.12.0",
-    "globals": "^17.13.0",
-    "turbo": "^2.11.7",
-    "typescript": "^6.0.0",
-    "vitest": "^5.0.3"
+    "@trustexam/config": "workspace:*",
+    "prettier": "^3.9.10",
+    "turbo": "^2.11.7"
   }
 }

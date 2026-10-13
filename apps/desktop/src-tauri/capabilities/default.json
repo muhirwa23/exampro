@@ -1,7 +1,7 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Base permissions for the TrustExam Pro candidate shell.",
+  "description": "Minimal permissions for the main window. Add only what a task needs.",
   "windows": ["main"],
   "permissions": ["core:default"]
 }

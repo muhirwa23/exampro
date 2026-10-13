@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import "./globals.css";
-import { t } from "../lib/messages";
 
 export const metadata: Metadata = {
-  title: t("title"),
-  description: "Trusted hiring and certification assessments.",
+  title: "TrustExam Pro",
+  description: "Secure exams with evidence-based integrity reports.",
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body>{children}</body>
