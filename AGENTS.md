@@ -1,6 +1,6 @@
 # AGENTS.md: TrustExam Pro
 
-Read this first. It applies to every agent (Claude Code, Codex, Antigravity). Keep it under 12,000 characters; details live in `docs/`.
+Read this first. It applies to every agent (Claude Code, Codex, Antigravity, Manus). Keep it under 12,000 characters; details live in `docs/`.
 
 ## Product in one paragraph
 TrustExam Pro is a secure exam platform for hiring and certification. HR admins use a **web app** to build exams, invite candidates and review integrity reports. Candidates take every exam in a **desktop app** (Windows and macOS) that locks the computer, shows the exam and collects integrity evidence. AI only **flags** risk with reasons and evidence; a **human reviewer decides**. Full spec: `docs/SPEC.md`. Architecture: `docs/ARCHITECTURE.md`. Current work: `docs/PLAN.md`.
@@ -16,7 +16,8 @@ TrustExam Pro is a secure exam platform for hiring and certification. HR admins 
 | `apps/desktop/src/` | React screens of the candidate app | Antigravity |
 | `apps/desktop/src-tauri/`, `crates/` | Tauri 2 app, Rust core, per-OS security modules | Claude Code |
 | `e2e/` | Playwright tests | Antigravity |
-| `infra/`, `.github/`, `docs/` | Docker, CI, docs | Claude Code |
+| `infra/`, `.github/`, `docs/` | Docker, CI, docs (except the two Manus folders below) | Claude Code |
+| `packages/denylist/`, `packages/demo-content/`, `loadtest/`, `docs/research/`, `docs/content/` | Denylist data, demo exams, k6 load tests, vendor research, candidate-facing copy drafts | Manus |
 
 Only edit folders your task names. If you must change a folder owned by another agent, stop and say so in the PR description instead.
 
