@@ -1,0 +1,460 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum MembershipRole {
+  ORG_OWNER
+  ADMIN
+  REVIEWER
+  SENIOR_REVIEWER
+}
+
+enum SecurityLevel {
+  STANDARD
+  LOCKDOWN
+}
+
+enum IdCheck {
+  NONE
+  VENDOR
+  MANUAL
+}
+
+enum ExamStatus {
+  DRAFT
+  PUBLISHED
+  CLOSED
+}
+
+enum QuestionType {
+  MCQ
+  MULTI
+  TRUE_FALSE
+  SHORT
+  ESSAY
+  FILE
+}
+
+enum InvitationChannel {
+  EMAIL
+  WHATSAPP
+  SMS
+}
+
+enum InvitationStatus {
+  SENT
+  OPENED
+  SYSTEM_CHECK_PASSED
+  STARTED
+  SUBMITTED
+  EXPIRED
+}
+
+enum AttemptState {
+  IN_PROGRESS
+  DISCONNECTED
+  SUBMITTED
+  ABANDONED
+}
+
+enum IntegritySeverity {
+  INFO
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum EvidenceKind {
+  SNAPSHOT_CAMERA
+  SNAPSHOT_SCREEN
+  CLIP_AUDIO
+  CLIP_VIDEO
+  ID_DOC
+  SELFIE
+}
+
+enum IdentityMethod {
+  VENDOR
+  MANUAL
+}
+
+enum IdentityResult {
+  PASS
+  FAIL
+  REVIEW
+}
+
+enum RiskBand {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum ReviewDecisionType {
+  ACCEPT
+  RETAKE
+  REJECT
+  ESCALATE
+}
+
+enum AppealStatus {
+  OPEN
+  UPHELD
+  DENIED
+}
+
+model Organization {
+  id                  String       @id @default(uuid()) @db.Uuid
+  name                String
+  country             String?
+  dataRegion          String       @default("AFRICA")
+  retentionMediaDays  Int          @default(30)
+  retentionReportDays Int          @default(365)
+  faceMatchEnabled    Boolean      @default(false)
+  createdAt           DateTime     @default(now()) @db.Timestamptz(3)
+  updatedAt           DateTime     @updatedAt @db.Timestamptz(3)
+  memberships         Membership[]
+  exams               Exam[]
+  candidates          Candidate[]
+  invitations         Invitation[]
+  auditLogs           AuditLog[]
+
+  @@index([createdAt])
+}
+
+model User {
+  id                  String           @id @default(uuid()) @db.Uuid
+  email               String           @unique
+  name                String
+  passwordHash        String
+  createdAt           DateTime         @default(now()) @db.Timestamptz(3)
+  updatedAt           DateTime         @updatedAt @db.Timestamptz(3)
+  memberships         Membership[]
+  reviewDecisions     ReviewDecision[]
+  appealsDecided      Appeal[]          @relation("AppealDecider")
+
+  @@index([createdAt])
+}
+
+model Membership {
+  userId         String         @db.Uuid
+  organizationId String         @db.Uuid
+  role           MembershipRole
+  createdAt      DateTime       @default(now()) @db.Timestamptz(3)
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@id([userId, organizationId])
+  @@index([organizationId, role])
+}
+
+model Exam {
+  id                String        @id @default(uuid()) @db.Uuid
+  organizationId    String        @db.Uuid
+  title             String
+  instructions      String        @default("")
+  durationSec       Int
+  passMarkPct       Float
+  windowStart       DateTime?     @db.Timestamptz(3)
+  windowEnd         DateTime?     @db.Timestamptz(3)
+  securityLevel     SecurityLevel @default(STANDARD)
+  idCheck           IdCheck       @default(NONE)
+  cameraRequired    Boolean       @default(false)
+  shuffleQuestions  Boolean       @default(false)
+  shuffleOptions    Boolean       @default(false)
+  status            ExamStatus    @default(DRAFT)
+  createdAt         DateTime      @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime      @updatedAt @db.Timestamptz(3)
+  organization      Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  questions         Question[]
+  invitations       Invitation[]
+  rules             ExamRules[]
+
+  @@unique([id, organizationId])
+  @@index([organizationId, status, createdAt])
+  @@index([organizationId, windowStart, windowEnd])
+}
+
+model Question {
+  id              String       @id @default(uuid()) @db.Uuid
+  organizationId  String       @db.Uuid
+  examId          String       @db.Uuid
+  type            QuestionType
+  prompt          Json
+  options         Json?
+  correct         Json?
+  points          Float        @default(1)
+  order           Int          @map("order")
+  poolTag         String?
+  createdAt       DateTime     @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime     @updatedAt @db.Timestamptz(3)
+  exam            Exam         @relation(fields: [examId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  answers         Answer[]
+
+  @@unique([id, organizationId])
+  @@index([organizationId, examId, order])
+  @@index([organizationId, examId, poolTag])
+  @@index([examId, organizationId])
+}
+
+model Candidate {
+  id              String       @id @default(uuid()) @db.Uuid
+  organizationId  String       @db.Uuid
+  email           String
+  phone           String?
+  name            String
+  externalRef     String?
+  createdAt       DateTime     @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime     @updatedAt @db.Timestamptz(3)
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  invitations     Invitation[]
+
+  @@unique([id, organizationId])
+  @@unique([organizationId, email])
+  @@index([organizationId, createdAt])
+  @@index([organizationId, externalRef])
+}
+
+model Invitation {
+  id              String            @id @default(uuid()) @db.Uuid
+  organizationId  String            @db.Uuid
+  examId          String            @db.Uuid
+  candidateId     String            @db.Uuid
+  examCodeHash    String            @unique
+  channel         InvitationChannel
+  status          InvitationStatus  @default(SENT)
+  accommodations  Json              @default("{}")
+  sentAt          DateTime?         @db.Timestamptz(3)
+  openedAt        DateTime?         @db.Timestamptz(3)
+  createdAt       DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime          @updatedAt @db.Timestamptz(3)
+  organization    Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  exam            Exam              @relation(fields: [examId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  candidate       Candidate         @relation(fields: [candidateId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  systemChecks    SystemCheck[]
+  attempts        Attempt[]
+
+  @@unique([id, organizationId])
+  @@index([organizationId, examId, status])
+  @@index([organizationId, candidateId, createdAt])
+  @@index([organizationId, sentAt])
+  @@index([examId, organizationId])
+  @@index([candidateId, organizationId])
+}
+
+model SystemCheck {
+  id              String       @id @default(uuid()) @db.Uuid
+  organizationId  String       @db.Uuid
+  invitationId    String       @db.Uuid
+  os              String
+  osVersion       String
+  cpuArch         String
+  cameraOk        Boolean
+  micOk           Boolean
+  bandwidthKbps   Int
+  blockingApps    Json         @default("[]")
+  passed          Boolean
+  createdAt       DateTime     @default(now()) @db.Timestamptz(3)
+  invitation      Invitation   @relation(fields: [invitationId, organizationId], references: [id, organizationId], onDelete: Cascade)
+
+  @@index([organizationId, invitationId, createdAt])
+  @@index([organizationId, passed, createdAt])
+  @@index([invitationId, organizationId])
+}
+
+model Attempt {
+  id                    String          @id @default(uuid()) @db.Uuid
+  organizationId        String          @db.Uuid
+  invitationId          String          @db.Uuid
+  deviceKeyFingerprint  String?
+  startedAt             DateTime        @default(now()) @db.Timestamptz(3)
+  submittedAt           DateTime?       @db.Timestamptz(3)
+  lastHeartbeatAt       DateTime?       @db.Timestamptz(3)
+  state                 AttemptState    @default(IN_PROGRESS)
+  score                 Float?
+  scorePct              Float?
+  invitation            Invitation      @relation(fields: [invitationId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  answers               Answer[]
+  integrityEvents       IntegrityEvent[]
+  evidence              Evidence[]
+  identityChecks        IdentityCheck[]
+  riskAssessments       RiskAssessment[]
+  reviewDecisions       ReviewDecision[]
+  appeals               Appeal[]
+  consents              Consent[]
+
+  @@unique([id, organizationId])
+  @@index([organizationId, invitationId, startedAt])
+  @@index([organizationId, state, lastHeartbeatAt])
+  @@index([invitationId, organizationId])
+}
+
+model Answer {
+  id              String    @id @default(uuid()) @db.Uuid
+  organizationId  String    @db.Uuid
+  attemptId       String    @db.Uuid
+  questionId      String    @db.Uuid
+  value           Json?
+  clientSavedAt   DateTime? @db.Timestamptz(3)
+  serverSavedAt   DateTime  @default(now()) @db.Timestamptz(3)
+  version         Int       @default(1)
+  attempt         Attempt   @relation(fields: [attemptId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  question        Question  @relation(fields: [questionId, organizationId], references: [id, organizationId], onDelete: Restrict)
+
+  @@unique([attemptId, questionId])
+  @@index([organizationId, attemptId, serverSavedAt])
+  @@index([attemptId, organizationId])
+  @@index([questionId, organizationId])
+}
+
+model IntegrityEvent {
+  id              String            @id @default(uuid()) @db.Uuid
+  organizationId  String            @db.Uuid
+  attemptId       String            @db.Uuid
+  type            String
+  severity        IntegritySeverity
+  occurredAt      DateTime          @db.Timestamptz(3)
+  durationSec     Int               @default(0)
+  details         Json              @default("{}")
+  evidenceIds     String[]          @default([]) @db.Uuid
+  attempt         Attempt           @relation(fields: [attemptId, organizationId], references: [id, organizationId], onDelete: Cascade)
+
+  @@index([organizationId, attemptId, occurredAt])
+  @@index([organizationId, severity, occurredAt])
+  @@index([attemptId, organizationId])
+}
+
+model Evidence {
+  id              String       @id @default(uuid()) @db.Uuid
+  organizationId  String       @db.Uuid
+  attemptId       String       @db.Uuid
+  kind            EvidenceKind
+  storageKey      String
+  sha256          String
+  sizeBytes       Int
+  createdAt       DateTime     @default(now()) @db.Timestamptz(3)
+  deleteAfter     DateTime     @db.Timestamptz(3)
+  attempt         Attempt      @relation(fields: [attemptId, organizationId], references: [id, organizationId], onDelete: Cascade)
+
+  @@index([organizationId, attemptId, createdAt])
+  @@index([organizationId, deleteAfter])
+  @@index([attemptId, organizationId])
+}
+
+model IdentityCheck {
+  id              String         @id @default(uuid()) @db.Uuid
+  organizationId  String         @db.Uuid
+  attemptId       String         @db.Uuid
+  method          IdentityMethod
+  vendorRef       String?
+  result          IdentityResult
+  matchScore      Float?
+  createdAt       DateTime       @default(now()) @db.Timestamptz(3)
+  attempt         Attempt        @relation(fields: [attemptId, organizationId], references: [id, organizationId], onDelete: Cascade)
+
+  @@index([organizationId, attemptId, createdAt])
+  @@index([attemptId, organizationId])
+}
+
+model RiskAssessment {
+  id              String    @id @default(uuid()) @db.Uuid
+  organizationId  String    @db.Uuid
+  attemptId       String    @db.Uuid
+  score           Int
+  band            RiskBand
+  reasons         Json      @default("[]")
+  version         Int
+  createdAt       DateTime  @default(now()) @db.Timestamptz(3)
+  attempt         Attempt   @relation(fields: [attemptId, organizationId], references: [id, organizationId], onDelete: Cascade)
+
+  @@unique([attemptId, version])
+  @@index([organizationId, band, createdAt])
+  @@index([attemptId, organizationId])
+}
+
+model ReviewDecision {
+  id              String              @id @default(uuid()) @db.Uuid
+  organizationId  String              @db.Uuid
+  attemptId       String              @db.Uuid
+  reviewerId      String              @db.Uuid
+  decision        ReviewDecisionType
+  note            String              @default("")
+  evidenceViewed  Boolean             @default(false)
+  createdAt       DateTime            @default(now()) @db.Timestamptz(3)
+  attempt         Attempt             @relation(fields: [attemptId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  reviewer        User                @relation(fields: [reviewerId], references: [id], onDelete: Restrict)
+
+  @@index([organizationId, attemptId, createdAt])
+  @@index([organizationId, reviewerId, createdAt])
+  @@index([attemptId, organizationId])
+  @@index([reviewerId])
+}
+
+model Appeal {
+  id              String        @id @default(uuid()) @db.Uuid
+  organizationId  String        @db.Uuid
+  attemptId       String        @db.Uuid
+  message         String
+  status          AppealStatus  @default(OPEN)
+  decidedBy       String?       @db.Uuid
+  decidedAt       DateTime?     @db.Timestamptz(3)
+  createdAt       DateTime      @default(now()) @db.Timestamptz(3)
+  attempt         Attempt       @relation(fields: [attemptId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  decider         User?         @relation("AppealDecider", fields: [decidedBy], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, attemptId, createdAt])
+  @@index([organizationId, status, createdAt])
+  @@index([attemptId, organizationId])
+  @@index([decidedBy])
+}
+
+model Consent {
+  id                String    @id @default(uuid()) @db.Uuid
+  organizationId    String    @db.Uuid
+  attemptId         String    @db.Uuid
+  noticeVersion     String
+  biometricConsent  Boolean   @default(false)
+  acceptedAt        DateTime  @default(now()) @db.Timestamptz(3)
+  ipHash            String
+  attempt           Attempt   @relation(fields: [attemptId, organizationId], references: [id, organizationId], onDelete: Cascade)
+
+  @@index([organizationId, attemptId, acceptedAt])
+  @@index([attemptId, organizationId])
+}
+
+model AuditLog {
+  id              String       @id @default(uuid()) @db.Uuid
+  organizationId  String       @db.Uuid
+  actorType       String
+  actorId         String?
+  action          String
+  targetType      String
+  targetId        String?
+  metadata        Json         @default("{}")
+  createdAt       DateTime     @default(now()) @db.Timestamptz(3)
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, createdAt])
+  @@index([organizationId, targetType, targetId])
+  @@index([organizationId, actorId, createdAt])
+}
+
+model ExamRules {
+  id              String       @id @default(uuid()) @db.Uuid
+  organizationId  String       @db.Uuid
+  examId          String       @db.Uuid
+  version         Int
+  json            Json
+  signature       String
+  createdAt       DateTime     @default(now()) @db.Timestamptz(3)
+  exam            Exam         @relation(fields: [examId, organizationId], references: [id, organizationId], onDelete: Cascade)
+
+  @@unique([examId, version])
+  @@index([organizationId, examId, version])
+  @@index([examId, organizationId])
+}

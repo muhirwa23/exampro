@@ -10,7 +10,7 @@ Agents tick items in the PR that finishes them. IDs are stable; prompts referenc
 - [ ] P0-05 ME Turn on Codex code review; add branch protection (CI green + 1 review)
 
 ## Phase 1: Backend core
-- [ ] P1-01 CX Prisma schema for SPEC §2 + migrations + seed
+- [x] P1-01 CX Prisma schema for SPEC §2 + migrations + seed
 - [ ] P1-02 CX Auth: sign up, verify email, sign in, reset, sessions, org creation
 - [ ] P1-03 CX Memberships, roles guard, invite teammates
 - [ ] P1-04 CX Audit log module + interceptor + query endpoint
