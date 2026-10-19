@@ -84,8 +84,8 @@ async function main(): Promise<void> {
 
       await tx.user.upsert({
         where: { email: ownerEmail },
-        update: { name: ownerName, passwordHash },
-        create: { id: ownerId, email: ownerEmail, name: ownerName, passwordHash },
+        update: { name: ownerName, passwordHash, emailVerifiedAt: new Date() },
+        create: { id: ownerId, email: ownerEmail, name: ownerName, passwordHash, emailVerifiedAt: new Date() },
       });
 
       const owner = await tx.user.findUniqueOrThrow({ where: { email: ownerEmail }, select: { id: true } });

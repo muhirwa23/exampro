@@ -11,7 +11,7 @@ Agents tick items in the PR that finishes them. IDs are stable; prompts referenc
 
 ## Phase 1: Backend core
 - [x] P1-01 CX Prisma schema for SPEC §2 + migrations + seed
-- [ ] P1-02 CX Auth: sign up, verify email, sign in, reset, sessions, org creation
+- [x] P1-02 CX Auth: sign up, verify email, sign in, reset, sessions, org creation
 - [ ] P1-03 CX Memberships, roles guard, invite teammates
 - [ ] P1-04 CX Audit log module + interceptor + query endpoint
 - [ ] P1-05 CX Exams and questions CRUD, publish rules, CSV question import

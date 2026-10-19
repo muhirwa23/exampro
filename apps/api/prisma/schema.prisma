@@ -14,6 +14,11 @@ enum MembershipRole {
   SENIOR_REVIEWER
 }
 
+enum AuthTokenPurpose {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+}
+
 enum SecurityLevel {
   STANDARD
   LOCKDOWN
@@ -132,13 +137,45 @@ model User {
   email               String           @unique
   name                String
   passwordHash        String
+  emailVerifiedAt     DateTime?        @db.Timestamptz(3)
   createdAt           DateTime         @default(now()) @db.Timestamptz(3)
   updatedAt           DateTime         @updatedAt @db.Timestamptz(3)
   memberships         Membership[]
   reviewDecisions     ReviewDecision[]
   appealsDecided      Appeal[]          @relation("AppealDecider")
+  authTokens          AuthToken[]
+  sessions            AuthSession[]
 
   @@index([createdAt])
+}
+
+model AuthToken {
+  id          String           @id @default(uuid()) @db.Uuid
+  userId      String           @db.Uuid
+  purpose     AuthTokenPurpose
+  tokenHash   String           @unique
+  expiresAt   DateTime         @db.Timestamptz(3)
+  consumedAt  DateTime?        @db.Timestamptz(3)
+  createdAt   DateTime         @default(now()) @db.Timestamptz(3)
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, purpose, expiresAt])
+  @@index([purpose, expiresAt])
+}
+
+model AuthSession {
+  id             String    @id @default(uuid()) @db.Uuid
+  userId         String    @db.Uuid
+  tokenHash      String    @unique
+  expiresAt      DateTime  @db.Timestamptz(3)
+  revokedAt      DateTime? @db.Timestamptz(3)
+  userAgentHash  String?
+  ipHash         String?
+  createdAt      DateTime  @default(now()) @db.Timestamptz(3)
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
+  @@index([revokedAt, expiresAt])
 }
 
 model Membership {

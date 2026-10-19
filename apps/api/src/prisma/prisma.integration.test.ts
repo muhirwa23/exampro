@@ -6,6 +6,8 @@ import { PrismaClient } from "../generated/prisma/client.js";
 import { scoped } from "../tenancy/scoped.js";
 
 const apiDirectory = fileURLToPath(new URL("../../", import.meta.url));
+const prismaExecutable = fileURLToPath(new URL("../../node_modules/.bin/prisma", import.meta.url));
+const tsxExecutable = fileURLToPath(new URL("../../node_modules/.bin/tsx", import.meta.url));
 const databaseUrl = process.env.P1_TEST_DATABASE_URL;
 const demoOrganizationId = "9fd1f65c-6044-4b33-8f2d-84dd3f54ce01";
 let prisma: PrismaClient | undefined;
@@ -33,12 +35,12 @@ integration("Prisma migration, seed, and tenancy integration", () => {
       DEMO_OWNER_EMAIL: "integration-owner@example.invalid",
       DEMO_OWNER_NAME: "Integration Owner",
     };
-    execFileSync("pnpm", ["exec", "prisma", "migrate", "deploy", "--config", "prisma.config.ts"], {
+    execFileSync(prismaExecutable, ["migrate", "deploy", "--config", "prisma.config.ts"], {
       cwd: apiDirectory,
       env: environment,
       stdio: "inherit",
     });
-    execFileSync("pnpm", ["exec", "tsx", "src/prisma/seed.ts"], {
+    execFileSync(tsxExecutable, ["src/prisma/seed.ts"], {
       cwd: apiDirectory,
       env: environment,
       stdio: "inherit",
@@ -72,6 +74,11 @@ integration("Prisma migration, seed, and tenancy integration", () => {
     const visibleCandidates = await tenantClient.candidate.findMany({ orderBy: { email: "asc" } });
     expect(visibleCandidates).toHaveLength(3);
     expect(visibleCandidates.map(({ email }) => email)).not.toContain("other-tenant@example.invalid");
+    const demoOwner = await prisma.user.findUniqueOrThrow({
+      where: { email: "integration-owner@example.invalid" },
+      select: { emailVerifiedAt: true },
+    });
+    expect(demoOwner.emailVerifiedAt).toBeInstanceOf(Date);
 
     const demoInvitation = await prisma.invitation.findFirstOrThrow({
       where: { organizationId: demoOrganizationId },
